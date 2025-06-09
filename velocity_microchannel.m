@@ -1,10 +1,14 @@
+% Created by Nur Fatihah Mohd Zool Amali for MEng Report Submission
+% Refer to key equations from rectangular channel 
+& chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://file.notion.so/f/f/f292e5b9-4053-4c88-86c8-5bdbcc4209c5/05c492d2-2781-479b-8fd6-64d5e31cb456/RectangularChannelBasics.pdf?table=block&id=aebb5af3-8bcb-464b-ac1a-f526fe493c26&spaceId=f292e5b9-4053-4c88-86c8-5bdbcc4209c5&expirationTimestamp=1749600000000&signature=ym9i5ydeJNRbJP-_ceQDY6ttEVvOCGCH_QHCx0ahOQA&downloadName=RectangularChannelBasics.pdf
+
 %% Velocity profile in y-z plane for rectangular microchannel
 
 % Parameters
 h = 0.62e-3;           % Channel height (m)
 w = 1e-3;              % Channel width (m)
 mu = 0.001;            % Dynamic viscosity (Pa.s)
-Q_in = 3e-9;           % Volumetric flow rate (m^3/s)
+Q_in = 2e-9;           % Volumetric flow rate (m^3/s)
 L = 5e-2;              % Channel length (m)
 
 % Compute pressure drop using Fourier approximation
@@ -59,18 +63,7 @@ cb = colorbar;
 set(cb, 'FontName', 'Aptos', 'FontSize', 15);
 ylabel(cb, 'Velocity (mm/s)', 'FontName', 'Aptos', 'FontSize', 15);
 
-%% Calculating average velocity to validate formula
-
-% -------------------------
-% Velocity profile in y-z plane for rectangular microchannel
-% -------------------------
-
-% Parameters
-h = 0.62e-3;           % Channel height (m)
-w = 1e-3;              % Channel width (m)
-mu = 0.001;            % Dynamic viscosity (Pa.s)
-Q_in = 3e-9;           % Volumetric flow rate (m^3/s)
-L = 5e-2;              % Channel length (m)
+%% Calculating total average velocity
 
 % Compute pressure drop using Fourier approximation
 sum_term = 0;
@@ -121,3 +114,29 @@ u_avg = total_velocity / area;  % in mm/s
 
 % Display average velocity
 fprintf('Average velocity: %.3f mm/s\n', u_avg);
+
+
+%% Calculate average velocity over a specified width range
+
+% Define width range in micrometers (e.g., from -100 µm to 100 µm)
+width_min_um = -500/2;  % µm
+width_max_um = 500/2;   % µm
+
+% Convert to meters for indexing
+width_min = width_min_um * 1e-6;
+width_max = width_max_um * 1e-6;
+
+% Find indices within the specified width range
+y_indices = find(y >= width_min & y <= width_max);
+
+% Extract submatrix for the region of interest
+u_sub = u(y_indices, :);  % All heights, selected widths
+
+% Compute average velocity over this region
+sub_total_velocity = sum(u_sub(:)) * dy * dz;
+sub_area = length(y_indices) * dy * length(z) * dz;
+u_avg_sub = sub_total_velocity / sub_area;
+
+% Display result
+fprintf('Average velocity from %.0f µm to %.0f µm: %.3f mm/s\n', ...
+    width_min_um, width_max_um, u_avg_sub);
